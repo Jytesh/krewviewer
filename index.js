@@ -308,12 +308,10 @@ const loadShip = (ship,shipGUI,params,Scontrollers,p) => {
             })
         )
         params.destroy = ()=>{
-            console.log(p)
             p.gui.removeFolder(shipGUI)
-            console.log(p.guis)
             p.guis.splice(p.count,1)
             p.count -= 1
-            console.log(p.guis)
+            o.destroy()
 
         }
         params.rotate = ()=>{
