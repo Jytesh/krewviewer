@@ -3,7 +3,9 @@
 import * as THREE from "https://threejs.org/build/three.module.js";
 import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 import { OBJLoader2 } from "https://threejs.org/examples/jsm/loaders/OBJLoader2.js";
-//import * as dat from "./dat.gui.min.js";
+import { map as SHIPSMAP} from "./data/ships.js";
+
+const SHIPSLIST = Object.keys(SHIPSMAP)
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
@@ -25,7 +27,9 @@ const environment = new Object(),loader = new THREE.TextureLoader(),water_tex = 
 
 let refresh = ()=>{};
 const GlobalParams = {
-    'Day' : true
+    'Day' : true,
+    'Ships' : false,
+    loadShip : ()=>loadShipFromGUI()
 };
 const guiparams = {
     x : 0,
@@ -34,34 +38,25 @@ const guiparams = {
     scale : 1,
     rotation : 0,
 }
-const shipParams = {
-    loadShip : ()=>loadShip(),
-    x : 0,
-    z : 0,
-    y : 0,
-    scale : 1,
-}
 let controllers = new Array()
-
 const gui = new dat.GUI({name : 'GUI'});
-const day = gui.add(GlobalParams,'Day')
-const shipGUI = gui.addFolder('Ship')
-    shipGUI.add(shipParams,'loadShip')
-const shipC = [
-    shipGUI.add(shipParams,'x',-30,30),
-    shipGUI.add(shipParams,'y',-30,30),
-    shipGUI.add(shipParams,'z',-30,30),
-    shipGUI.add(shipParams,'scale',1,10)
-]
+    const day = gui.add(GlobalParams,'Day')
+
+const spawnerGUI = gui.addFolder('Spawner')
+    spawnerGUI.add(GlobalParams,'loadShip')
+    spawnerGUI
+        .add(GlobalParams,'Ships')
+        .options(SHIPSLIST)
+        .name('Ship to Load')
+const shipsGUI = gui.addFolder('Ship')
+const shipsGUIList = new Object();
 const seadog = gui.addFolder('Seadog')
     controllers = [seadog.add(guiparams,'x',-30,30),
     seadog.add(guiparams,'y',-30,30),
     seadog.add(guiparams,'z',-30,30),
-    seadog.add(guiparams,'scale',1,10),
+    seadog.add(guiparams,'scale',1,100),
     seadog.add(guiparams,'rotation',0,360,1)
 ]
-
-
 
 water_tex.wrapS=water_tex.wrapT=THREE.RepeatWrapping
 {
@@ -183,39 +178,155 @@ water_tex.wrapS=water_tex.wrapT=THREE.RepeatWrapping
     scene.add(water)   
 }   
 scene.background = new THREE.Color(11789311);
+let render = (value) => {
+    let filter = {
+      r : 0,
+      g : 197,
+      b : 255
+    };
+    let start = {
+      r : 0,
+      g : 36,
+      b : 112
+    };
+    let color = {
+      r : 191,
+      g : 240,
+      b : 255
+    };
+    let i = {
+      r : 6,
+      g : 0,
+      b : 31
+    };
+    if ( 1 === value) {
+      let e = 0;
+      let logIntervalId = setInterval(() => {
+        e++;
+        light.intensity -= .02;
+        scene.fog.color.set(get(color, i, e / 100));
+        scene.background = new THREE.Color(get(color, i, e / 100));
+        if (100 === e) {
+          clearInterval(logIntervalId);
+        }
+      }, 20);
+    } else {
+      if (0 === value) {
+        let e = 0;
+        let logIntervalId = setInterval(() => {
+          e++;
+          light.intensity += .02;
+          scene.fog.color.set(get(i, color, e / 100));
+          scene.background = new THREE.Color(get(i, color, e / 100));
+          if (100 === e) {
+            clearInterval(logIntervalId);
+          }
+        }, 20);
+      }
+    }
+  };
+let get = (rgb1, rgb2, p) => {
+let o = Math.round((rgb2.r - rgb1.r) * p + rgb1.r);
+let d = Math.round((rgb2.g - rgb1.g) * p + rgb1.g);
+let stop = Math.round((rgb2.b - rgb1.b) * p + rgb1.b);
+return 16777216 + 65536 * (o < 255 ? o < 1 ? 0 : o : 255) + 256 * (d < 255 ? d < 1 ? 0 : d : 255) + (stop < 255 ? stop < 1 ? 0 : stop : 255);
+};
+day.onChange(()=>{
+    if(GlobalParams.Day){
+        render(0)
+    }else render(1)
+})
 
-
+const loadShipFromGUI = () => {
+    const ship = GlobalParams.Ships
+    if(!ship){
+        alert('Please select a ship before spawning it...')
+    }else{
+        const shipName = SHIPSMAP[ship]
+        if(shipName) {
+            let parent = shipsGUIList[shipName]
+            if(!parent){
+                parent = {
+                    gui : shipsGUI.addFolder(ship),
+                    count : 0,
+                    guis : []
+                }
+                shipsGUIList[shipName] = parent
+            }
+            const shipGUI = parent.gui.addFolder(`${ship} #${parent.count+1}`)
+            parent.guis.push(shipGUI)
+            parent.count += 1;
+            const shipParams = {
+                x : 0,
+                z : 0,
+                y : 4,
+                scale : 1,
+                rotateVal : 0,
+                rotate : ()=>{},
+                destroy : ()=>{}
+            }
+            const Scontrollers = [
+                shipGUI.add(shipParams,'x',-30,30),
+                shipGUI.add(shipParams,'y',-30,30),
+                shipGUI.add(shipParams,'z',-30,30),
+                shipGUI.add(shipParams,'scale',0.1,100),
+                shipGUI.add(shipParams,'rotateVal',-360,360),
+                
+            ]
+            const IControllers = {
+                rotate : shipGUI.add(shipParams,'rotate'),
+                destroy : shipGUI.add(shipParams,'destroy')
+            }
+            loadShip(shipName,shipGUI,shipParams,Scontrollers,parent)
+        }
+    }
+}
 
 
 // load a resource
-const loadShip = () => {
+const loadShip = (ship,shipGUI,params,Scontrollers,p) => {
     const textureLoader = new THREE.TextureLoader();
     const objloader = new OBJLoader2();
     const map = textureLoader.load('https://krew.io/assets/models/ships/tex.png');
     const shipMat = new THREE.MeshPhongMaterial({map:map})
     objloader.load(
-    'https://krew.io/assets/models/ships/bigship.obj',
+    `https://krew.io/assets/models/ships/${ship}.obj`,
     function ( o ) {
         o.traverse(mesh=>{
             if(mesh.isMesh) mesh.material = shipMat
         })
         scene.add( o );
-        o.position.set(0,40,0)
-        o.scale.set(0.1,0.1,0.1)
+        o.position.set(params.x,params.y,params.z)
+        o.scale.set(params.scale*0.1,params.scale*0.1,params.scale*0.1)
         const Crefresh = ()=>{
-            o.position.set(shipParams.x,shipParams.y,shipParams.z)
-            o.scale.set(shipParams.scale*0.1,shipParams.scale*0.1,shipParams.scale*0.1)
+            o.position.set(params.x,params.y,params.z)
+            o.scale.set(params.scale*0.1,params.scale*0.1,params.scale*0.1)
         }
-        shipC.forEach(t=>t.onChange(()=>{
-            Crefresh()
-        }))
+        Scontrollers.forEach(t=>
+            t.onChange(()=>{
+                Crefresh()
+            })
+        )
+        params.destroy = ()=>{
+            console.log(p)
+            p.gui.removeFolder(shipGUI)
+            console.log(p.guis)
+            p.guis.splice(p.count,1)
+            p.count -= 1
+            console.log(p.guis)
+
+        }
+        params.rotate = ()=>{
+            console.log((Math.PI/180) * params.rotateVal)
+            o.rotateY((Math.PI/180) * params.rotateVal)
+        }
         //object.scale.set(new THREE.Vector3(scale,scale,scale));
     },
-    function ( xhr ) {
+     ( xhr )=>{
         console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
     },
-    function ( error ) {
-        console.log( 'An error happened' );
+    ( e )=>{
+        console.log( 'An error happened' ,e);
     }
 );
 }
@@ -271,61 +382,3 @@ function animate() {
 }
 
 animate();
-let render = (value) => {
-    let filter = {
-      r : 0,
-      g : 197,
-      b : 255
-    };
-    let start = {
-      r : 0,
-      g : 36,
-      b : 112
-    };
-    let color = {
-      r : 191,
-      g : 240,
-      b : 255
-    };
-    let i = {
-      r : 6,
-      g : 0,
-      b : 31
-    };
-    if ( 1 === value) {
-      let e = 0;
-      let logIntervalId = setInterval(() => {
-        e++;
-        light.intensity -= .02;
-        scene.fog.color.set(get(color, i, e / 100));
-        scene.background = new THREE.Color(get(color, i, e / 100));
-        if (100 === e) {
-          clearInterval(logIntervalId);
-        }
-      }, 20);
-    } else {
-      if (0 === value) {
-        let e = 0;
-        let logIntervalId = setInterval(() => {
-          e++;
-          light.intensity += .02;
-          scene.fog.color.set(get(i, color, e / 100));
-          scene.background = new THREE.Color(get(i, color, e / 100));
-          if (100 === e) {
-            clearInterval(logIntervalId);
-          }
-        }, 20);
-      }
-    }
-  };
-  let get = (rgb1, rgb2, p) => {
-    let o = Math.round((rgb2.r - rgb1.r) * p + rgb1.r);
-    let d = Math.round((rgb2.g - rgb1.g) * p + rgb1.g);
-    let stop = Math.round((rgb2.b - rgb1.b) * p + rgb1.b);
-    return 16777216 + 65536 * (o < 255 ? o < 1 ? 0 : o : 255) + 256 * (d < 255 ? d < 1 ? 0 : d : 255) + (stop < 255 ? stop < 1 ? 0 : stop : 255);
-  };
-day.onChange(()=>{
-    if(GlobalParams.Day){
-        render(0)
-    }else render(1)
-})
