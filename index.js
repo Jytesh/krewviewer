@@ -48,7 +48,7 @@ const spawnerGUI = gui.addFolder('Spawner')
         .add(GlobalParams,'Ships')
         .options(SHIPSLIST)
         .name('Ship to Load')
-const shipsGUI = gui.addFolder('Ship')
+const shipsGUI = gui.addFolder('Ships')
 const shipsGUIList = new Object();
 const seadog = gui.addFolder('Seadog')
     controllers = [seadog.add(guiparams,'x',-30,30),
@@ -238,37 +238,39 @@ day.onChange(()=>{
 })
 
 const loadShipFromGUI = () => {
-    const ship = GlobalParams.Ships
-    if(!ship){
+    const shipName = GlobalParams.Ships
+    if(!shipName){
         alert('Please select a ship before spawning it...')
     }else{
-        const shipName = SHIPSMAP[ship]
-        if(shipName) {
-            let parent = shipsGUIList[shipName]
+        const ship = SHIPSMAP[shipName]
+        if(ship) {
+            let parent = shipsGUIList[ship.t]
             if(!parent){
                 parent = {
-                    gui : shipsGUI.addFolder(ship),
+                    gui : shipsGUI.addFolder(shipName),
                     count : 0,
                     guis : []
                 }
-                shipsGUIList[shipName] = parent
+                shipsGUIList[ship.t] = parent
             }
-            const shipGUI = parent.gui.addFolder(`${ship} #${parent.count+1}`)
+            const shipGUI = parent.gui.addFolder(`${shipName} #${parent.count+1}`)
             parent.guis.push(shipGUI)
             parent.count += 1;
+            const [x,y,z] = ship.offset
+            const scale = ship.scale
             const shipParams = {
-                x : 0,
-                z : 0,
-                y : 4,
-                scale : 1,
+                x : x,
+                z : z,
+                y : y,
+                scale : scale,
                 rotateVal : 0,
                 rotate : ()=>{},
                 destroy : ()=>{}
             }
             const Scontrollers = [
-                shipGUI.add(shipParams,'x',-30,30),
-                shipGUI.add(shipParams,'y',-30,30),
-                shipGUI.add(shipParams,'z',-30,30),
+                shipGUI.add(shipParams,'x',-100-x,100+x),
+                shipGUI.add(shipParams,'y',-100-y,100+y),
+                shipGUI.add(shipParams,'z',-100-z,100+z),
                 shipGUI.add(shipParams,'scale',0.1,100),
                 shipGUI.add(shipParams,'rotateVal',-360,360),
                 
@@ -277,7 +279,7 @@ const loadShipFromGUI = () => {
                 rotate : shipGUI.add(shipParams,'rotate'),
                 destroy : shipGUI.add(shipParams,'destroy')
             }
-            loadShip(shipName,shipGUI,shipParams,Scontrollers,parent)
+            loadShip(ship,shipGUI,shipParams,Scontrollers,parent)
         }
     }
 }
@@ -290,7 +292,7 @@ const loadShip = (ship,shipGUI,params,Scontrollers,p) => {
     const map = textureLoader.load('https://krew.io/assets/models/ships/tex.png');
     const shipMat = new THREE.MeshPhongMaterial({map:map})
     objloader.load(
-    `https://krew.io/assets/models/ships/${ship}.obj`,
+    `https://krew.io/assets/models/ships/${ship.t}.obj`,
     function ( o ) {
         o.traverse(mesh=>{
             if(mesh.isMesh) mesh.material = shipMat
@@ -299,8 +301,10 @@ const loadShip = (ship,shipGUI,params,Scontrollers,p) => {
         o.position.set(params.x,params.y,params.z)
         o.scale.set(params.scale*0.1,params.scale*0.1,params.scale*0.1)
         const Crefresh = ()=>{
+
             o.position.set(params.x,params.y,params.z)
             o.scale.set(params.scale*0.1,params.scale*0.1,params.scale*0.1)
+            ship.r ? o.rotateY(ship.r*Math.PI/2) : null;
         }
         Scontrollers.forEach(t=>
             t.onChange(()=>{
@@ -311,8 +315,7 @@ const loadShip = (ship,shipGUI,params,Scontrollers,p) => {
             p.gui.removeFolder(shipGUI)
             p.guis.splice(p.count,1)
             p.count -= 1
-            o.destroy()
-
+            scene.remove(o)
         }
         params.rotate = ()=>{
             console.log((Math.PI/180) * params.rotateVal)
