@@ -1,0 +1,1 @@
+Go [here](https://jytesh.github.io/krewviewer/krewviewer.html) to use viewer :)
