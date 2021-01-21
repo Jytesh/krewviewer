@@ -9,7 +9,6 @@ const SHIPSLIST = Object.keys(SHIPSMAP)
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
-let light;
 camera.far = 10
 
 camera.position.set(0, 10, 20);
@@ -57,12 +56,24 @@ const seadog = gui.addFolder('Seadog')
     seadog.add(guiparams,'scale',1,100),
     seadog.add(guiparams,'rotation',0,360,1)
 ]
-
+const f = {
+    boat :  new THREE.MeshLambertMaterial({
+        color: 9064510
+    }),
+    sail : new THREE.MeshLambertMaterial({
+        color: 16777215,
+        side : THREE.DoubleSide
+    }),
+    sky : new THREE.MeshBasicMaterial({
+        color: 50687,
+        side: THREE.DoubleSide
+    
+})
+}
 water_tex.wrapS=water_tex.wrapT=THREE.RepeatWrapping
-{
-    scene.fog = new THREE.FogExp2(14016995, .007), renderer.setClearColor(50687)
-     const ambientlight = new THREE.AmbientLight(12898018)
-     scene.add(ambientlight), environment.sphere = new THREE.Mesh((new THREE.BufferGeometry).fromGeometry(new THREE.SphereGeometry(4e3)), new THREE.MeshBasicMaterial({color:709114,side:THREE.BackSide})), scene.add(environment.sphere), environment.sphere.scale.y = .05;    
+scene.background = new THREE.Color(11789311), scene.fog = new THREE.FogExp2(11789311, .007)
+const light = new THREE.AmbientLight(13952255, .3); scene.add(light);const s = new THREE.Mesh(new THREE.PlaneBufferGeometry(3750, 3750), f.sky); s.rotation.x = .5 * -Math.PI, s.position.set(1250, 90, 1250), scene.add(s);const n = new THREE.Mesh(new THREE.SphereGeometry(5e3), f.sky); n.position.set(1250, 0, 1250), scene.add(n);const light3 = new THREE.DirectionalLight(16768939, 1); light3.position.set(0, 10, 20), light3.castShadow = !0, scene.add(light3)
+{   
      const Water = function(e, t) {
                 THREE.Mesh.call(this, e);
                 let i = this,
@@ -160,8 +171,6 @@ water_tex.wrapS=water_tex.wrapT=THREE.RepeatWrapping
     }
     Water.prototype = Object.create(THREE.Mesh.prototype);
     Water.prototype.constructor = Water;
-    light = new THREE.DirectionalLight(16381658, .5);
-    light.position.set(0, 100, 0), scene.add(light);
     var e = new THREE.PlaneBufferGeometry(6e3, 6e3);
     const water = new Water(e, {
         textureWidth: 1024,
@@ -204,6 +213,7 @@ let render = (value) => {
       let logIntervalId = setInterval(() => {
         e++;
         light.intensity -= .02;
+        light3.intensity -= .02
         scene.fog.color.set(get(color, i, e / 100));
         scene.background = new THREE.Color(get(color, i, e / 100));
         if (100 === e) {
@@ -216,6 +226,7 @@ let render = (value) => {
         let logIntervalId = setInterval(() => {
           e++;
           light.intensity += .02;
+          light3.intensity += .02;
           scene.fog.color.set(get(i, color, e / 100));
           scene.background = new THREE.Color(get(i, color, e / 100));
           if (100 === e) {
@@ -283,15 +294,7 @@ const loadShipFromGUI = () => {
         }
     }
 }
-const f = {
-    boat :  new THREE.MeshLambertMaterial({
-        color: 9064510
-    }),
-    sail : new THREE.MeshLambertMaterial({
-        color: 16777215
-    }),
-}
-f.sail.side = THREE.DoubleSide
+
 // load a resource
 const loadShip = (ship,shipGUI,params,Scontrollers,p) => {
     const textureLoader = new THREE.TextureLoader();
