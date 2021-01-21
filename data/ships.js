@@ -3,6 +3,7 @@ export const map = {
     'Wood Plank' : {
             t : 'raft',
             n : 'Wood Plank',
+            o : 1,
             offset : [0,0.5,0],
             scale : 35
     
@@ -10,6 +11,7 @@ export const map = {
     'Raft' : {
             t : 'raft',
             n : 'Raft',
+            o : 1,
             offset : [0,0.5,0],
             scale : 45
     
@@ -17,6 +19,7 @@ export const map = {
     'Trader' : {
             t : 'trader',
             n : 'Trader',
+            o : 1,
             offset : [0,-0.5,1],
             scale : 120
     
@@ -24,6 +27,7 @@ export const map = {
     'Boat' : {
             t : 'boat',
             n : 'Boat',
+            o : 1,
             offset : [0,-0.5,1],
             scale : 120
     
@@ -31,6 +35,7 @@ export const map = {
     'Destroyer' : {
             t : 'destroyer',
             n : 'Destroyer',
+            o : 1,
             offset : [0,-4.7,0],
             scale : 100
     

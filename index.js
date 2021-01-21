@@ -2,7 +2,7 @@
 
 import * as THREE from "https://threejs.org/build/three.module.js";
 import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
-import { OBJLoader2 } from "https://threejs.org/examples/jsm/loaders/OBJLoader2.js";
+import { OBJLoader } from "https://threejs.org/examples/jsm/loaders/OBJLoader.js";
 import { map as SHIPSMAP} from "./data/ships.js";
 
 const SHIPSLIST = Object.keys(SHIPSMAP)
@@ -283,57 +283,74 @@ const loadShipFromGUI = () => {
         }
     }
 }
-
-
+const f = {
+    boat :  new THREE.MeshLambertMaterial({
+        color: 9064510
+    }),
+    sail : new THREE.MeshLambertMaterial({
+        color: 16777215
+    }),
+}
+f.sail.side = THREE.DoubleSide
 // load a resource
 const loadShip = (ship,shipGUI,params,Scontrollers,p) => {
     const textureLoader = new THREE.TextureLoader();
-    const objloader = new OBJLoader2();
+    const objloader = new OBJLoader();
     const map = textureLoader.load('https://krew.io/assets/models/ships/tex.png');
     const shipMat = new THREE.MeshPhongMaterial({map:map})
     objloader.load(
-    `https://krew.io/assets/models/ships/${ship.t}.obj`,
-    function ( o ) {
-        o.traverse(mesh=>{
-            if(mesh.isMesh) mesh.material = shipMat
-        })
-        scene.add( o );
-        o.position.set(params.x,params.y,params.z)
-        o.scale.set(params.scale*0.1,params.scale*0.1,params.scale*0.1)
-        const Crefresh = ()=>{
-
+        `https://krew.io/assets/models/ships/${ship.t}.obj`,
+        function ( o ) {
+            if(!ship.o)
+                o.traverse(mesh=>{
+                    if(mesh.isMesh) mesh.material = shipMat
+                })
+            else {
+                if(o.children.length == 2 ){
+                    o.children[0].material = f.sail;
+                    o.children[1].material = f.boat;
+                }else{
+                    o.children.forEach(t=>t.material = f.boat)
+                }
+                
+            }
+            scene.add( o );
             o.position.set(params.x,params.y,params.z)
             o.scale.set(params.scale*0.1,params.scale*0.1,params.scale*0.1)
-            ship.r ? o.rotateY(ship.r*Math.PI/2) : null;
+            ship.rot ? o.rotateY(ship.rot*Math.PI/2) : null;
+            const Crefresh = ()=>{
+                o.position.set(params.x,params.y,params.z)
+                o.scale.set(params.scale*0.1,params.scale*0.1,params.scale*0.1)
+                
+            }
+            Scontrollers.forEach(t=>
+                t.onChange(()=>{
+                    Crefresh()
+                })
+            )
+            params.destroy = ()=>{
+                p.gui.removeFolder(shipGUI)
+                p.guis.splice(p.count,1)
+                p.count -= 1
+                scene.remove(o)
+            }
+            params.rotate = ()=>{
+                console.log((Math.PI/180) * params.rotateVal)
+                o.rotateY((Math.PI/180) * params.rotateVal)
+            }
+            //object.scale.set(new THREE.Vector3(scale,scale,scale));
+        },
+            ( xhr )=>{
+            console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
+        },
+        ( e )=>{
+            console.log( 'An error happened' ,e);
         }
-        Scontrollers.forEach(t=>
-            t.onChange(()=>{
-                Crefresh()
-            })
-        )
-        params.destroy = ()=>{
-            p.gui.removeFolder(shipGUI)
-            p.guis.splice(p.count,1)
-            p.count -= 1
-            scene.remove(o)
-        }
-        params.rotate = ()=>{
-            console.log((Math.PI/180) * params.rotateVal)
-            o.rotateY((Math.PI/180) * params.rotateVal)
-        }
-        //object.scale.set(new THREE.Vector3(scale,scale,scale));
-    },
-     ( xhr )=>{
-        console.log( ( xhr.loaded / xhr.total * 100 ) + '% loaded' );
-    },
-    ( e )=>{
-        console.log( 'An error happened' ,e);
-    }
-);
+    ); 
 }
 let loadDog = ()=>{
     const textureLoader = new THREE.TextureLoader();
-    const objloader = new OBJLoader2();
+    const objloader = new OBJLoader();
 
     let dogMap = textureLoader.load('./img/seadog.png')
     let dogMat = new THREE.MeshPhongMaterial({map:dogMap})
