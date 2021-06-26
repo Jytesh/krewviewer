@@ -2,9 +2,7 @@
 
 import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 import { map as SHIPSMAP } from "./data/ships.js";
-import {
-    OrbitControls
-} from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
+
 
 window.THREE = THREE; // for debug
 
