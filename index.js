@@ -120,7 +120,7 @@ const light = new THREE.AmbientLight(13952255, .3); scene.add(light);const s = n
                         value: null
                     },
                     alpha = {
-                        value= 1
+                        value: 1
                     },
                     time = {
                         value: 0
