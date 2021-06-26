@@ -1,6 +1,6 @@
 // Half of the code is from krew's dist.min.js so dont sue me :)
 
-import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r108/three.min.js;
+import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r108/three.min.js";
 import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 import { OBJLoader } from "https://krew.io/build/libs/OBJLoader.js";
 import { map as SHIPSMAP } from "./data/ships.js";
