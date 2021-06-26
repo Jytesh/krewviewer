@@ -10,9 +10,9 @@ const OBJLoader = THREE.OBJLoader;
 
 const SHIPSLIST = Object.keys(SHIPSMAP)
 
-console.log(THREE.scene)
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+let light;
 camera.far = 10
 
 camera.position.set(0, 10, 20);
@@ -64,93 +64,93 @@ controllers = [seadog.add(guiparams, 'x', -30, 30),
     seadog.add(guiparams, 'scale', 1, 100),
     seadog.add(guiparams, 'rotation', 0, 360, 1)
 ]
-const f = {
-    boat :  new THREE.MeshLambertMaterial({
-        color: 9064510
-    }),
-    sail : new THREE.MeshLambertMaterial({
-        color: 16777215,
-        side : THREE.DoubleSide
-    }),
-    sky : new THREE.MeshBasicMaterial({
-        color: 50687,
-        side: THREE.DoubleSide
-    
-})
-}
-water_tex.wrapS=water_tex.wrapT=THREE.RepeatWrapping
-scene.background = new THREE.Color(11789311), scene.fog = new THREE.FogExp2(11789311, .007)
-const light = new THREE.AmbientLight(13952255, .3); scene.add(light);const s = new THREE.Mesh(new THREE.PlaneBufferGeometry(3750, 3750), f.sky); s.rotation.x = .5 * -Math.PI, s.position.set(1250, 90, 1250), scene.add(s);const n = new THREE.Mesh(new THREE.SphereGeometry(5e3), f.sky); n.position.set(1250, 0, 1250), scene.add(n);const light3 = new THREE.DirectionalLight(16768939, 1); light3.position.set(0, 10, 20), light3.castShadow = !0, scene.add(light3)
-{   
-     const Water = function(e, t) {
-                THREE.Mesh.call(this, e);
-                let i = this,
-                    o = void 0 !== (t = t || {}).textureWidth ? t.textureWidth : 512,
-                    a = void 0 !== t.textureHeight ? t.textureHeight : 512,
-                    s = void 0 !== t.clipBias ? t.clipBias : 0,
-                    n = void 0 !== t.alpha ? t.alpha : 1,
-                    r = void 0 !== t.time ? t.time : 0,
-                    l = void 0 !== t.waterNormals ? t.waterNormals : null,
-                    d = void 0 !== t.sunDirection ? t.sunDirection : new THREE.Vector3(.70707, .70707, 0),
-                    h = new THREE.Color(void 0 !== t.sunColor ? t.sunColor : 16777215),
-                    c = new THREE.Color(void 0 !== t.waterColor ? t.waterColor : 50687),
-                    p = void 0 !== t.eye ? t.eye : new THREE.Vector3(0, 0, 0),
-                    m = void 0 !== t.distortionScale ? t.distortionScale : 20,
-                    u = void 0 !== t.side ? t.side : THREE.FrontSide,
-                    g = void 0 !== t.fog && t.fog,
-                    b = new THREE.Plane,
-                    y = new THREE.Vector3,
-                    f = new THREE.Vector3,
-                    v = new THREE.Vector3,
-                    w = new THREE.Matrix4,
-                    $ = new THREE.Vector3(0, 0, -1),
-                    k = new THREE.Vector4,
-                    x = new THREE.Vector3,
-                    C = new THREE.Vector3,
-                    E = new THREE.Vector4,
-                    T = new THREE.Matrix4;
-                let mirrorCamera = new THREE.PerspectiveCamera;
-                let S = {
-                    minFilter: THREE.LinearFilter,
-                    magFilter: THREE.LinearFilter,
-                    format: THREE.RGBFormat,
-                    stencilBuffer: !1
-                },
-                    mirrorSampler = {
+
+water_tex.wrapS = water_tex.wrapT = THREE.RepeatWrapping;
+{
+    scene.fog = new THREE.FogExp2(14016995, .007), renderer.setClearColor(50687)
+    const ambientlight = new THREE.AmbientLight(12898018)
+    scene.add(ambientlight);
+    // (new THREE.BufferGeometry).fromGeometry(
+    environment.sphere = new THREE.Mesh(new THREE.SphereGeometry(4e3), new THREE.MeshBasicMaterial({
+        color: 709114,
+        side: THREE.BackSide
+    })), scene.add(environment.sphere), environment.sphere.scale.y = .05;
+    const Water = function (e, t) {
+        THREE.Mesh.call(this, e);
+        let i = this,
+            o = void 0 !== (t = t || {}).textureWidth ? t.textureWidth : 512,
+            a = void 0 !== t.textureHeight ? t.textureHeight : 512,
+            s = void 0 !== t.clipBias ? t.clipBias : 0,
+            n = void 0 !== t.alpha ? t.alpha : 1,
+            r = void 0 !== t.time ? t.time : 0,
+            l = void 0 !== t.waterNormals ? t.waterNormals : null,
+            d = void 0 !== t.sunDirection ? t.sunDirection : new THREE.Vector3(.70707, .70707, 0),
+            h = new THREE.Color(void 0 !== t.sunColor ? t.sunColor : 16777215),
+            c = new THREE.Color(void 0 !== t.waterColor ? t.waterColor : 50687),
+            p = void 0 !== t.eye ? t.eye : new THREE.Vector3(0, 0, 0),
+            m = void 0 !== t.distortionScale ? t.distortionScale : 20,
+            u = void 0 !== t.side ? t.side : THREE.FrontSide,
+            g = void 0 !== t.fog && t.fog,
+            b = new THREE.Plane,
+            y = new THREE.Vector3,
+            f = new THREE.Vector3,
+            v = new THREE.Vector3,
+            w = new THREE.Matrix4,
+            $ = new THREE.Vector3(0, 0, -1),
+            k = new THREE.Vector4,
+            x = new THREE.Vector3,
+            C = new THREE.Vector3,
+            E = new THREE.Vector4,
+            T = new THREE.Matrix4;
+        let mirrorCamera = new THREE.PerspectiveCamera;
+        let S = {
+                minFilter: THREE.LinearFilter,
+                magFilter: THREE.LinearFilter,
+                format: THREE.RGBFormat,
+                stencilBuffer: !1
+            },
+            M = new THREE.WebGLRenderTarget(o, a, S);
+        !Math.log2(o) % 1 != 0 && !Math.log2(a) % 1 != 0 || (M.texture.generateMipmaps = !1);
+        let I = {
+                uniforms: THREE.UniformsUtils.merge([THREE.UniformsLib.fog, THREE.UniformsLib.lights, {
+                    normalSampler: {
                         value: null
                     },
-                    alpha = {
+                    mirrorSampler: {
+                        value: null
+                    },
+                    alpha: {
                         value: 1
                     },
-                    time = {
+                    time: {
                         value: 0
                     },
-                    size = {
+                    size: {
                         value: 1
                     },
-                    distortionScale = {
+                    distortionScale: {
                         value: 20
                     },
-                    textureMatrix = {
+                    textureMatrix: {
                         value: new THREE.Matrix4
                     },
-                    sunColor = {
+                    sunColor: {
                         value: new THREE.Color(8355711)
                     },
-                    sunDirection = {
+                    sunDirection: {
                         value: new THREE.Vector3(0, .70707, .70707)
                     },
-                    eye = {
+                    eye: {
                         value: new THREE.Vector3
                     },
-                    waterColor = {
+                    waterColor: {
                         value: new THREE.Color(50687)
-                    };
-         const I = {
-             vertexShader: ["uniform mat4 textureMatrix;", "uniform float time;", "varying vec4 mirrorCoord;", "varying vec4 worldPosition;", "#include <common>", "#include <fog_pars_vertex>", "#include <shadowmap_pars_vertex>", "#include <logdepthbuf_pars_vertex>", "void main() {", "\tmirrorCoord = modelMatrix * vec4( position, 1.0 );", "\tworldPosition = mirrorCoord.xyzw;", "\tmirrorCoord = textureMatrix * mirrorCoord;", "\tvec4 mvPosition =  modelViewMatrix * vec4( position, 1.0 );", "\tgl_Position = projectionMatrix * mvPosition;", "#include <beginnormal_vertex>", "#include <defaultnormal_vertex>", "#include <logdepthbuf_vertex>", "#include <fog_vertex>", "#include <shadowmap_vertex>", "}"].join("\n"),
-             fragmentShader: ["uniform sampler2D mirrorSampler;", "uniform float alpha;", "uniform float time;", "uniform float size;", "uniform float distortionScale;", "uniform sampler2D normalSampler;", "uniform vec3 sunColor;", "uniform vec3 sunDirection;", "uniform vec3 eye;", "uniform vec3 waterColor;", "varying vec4 mirrorCoord;", "varying vec4 worldPosition;", "vec4 getNoise( vec2 uv ) {", "\tvec2 uv0 = ( uv / 103.0 ) + vec2(time / 107.0, time / 209.0);", "\tvec2 uv1 = uv / 107.0-vec2( time / -199.0, time / 310.0 );", "\tvec2 uv2 = uv / vec2( 8907.0, 9803.0 ) + vec2( time / 101.0, time / 97.0 );", "\tvec2 uv3 = uv / vec2( 1091.0, 1027.0 ) - vec2( time / 109.0, time / -113.0 );", "\tvec4 noise = texture2D( normalSampler, uv0 ) +", "\t\ttexture2D( normalSampler, uv1 ) +", "\t\ttexture2D( normalSampler, uv2 ) +", "\t\ttexture2D( normalSampler, uv3 );", "\treturn noise * 0.5 - 1.0;", "}", "void sunLight( const vec3 surfaceNormal, const vec3 eyeDirection, float shiny, float spec, float diffuse, inout vec3 diffuseColor, inout vec3 specularColor ) {", "\tvec3 reflection = normalize( reflect( -sunDirection, surfaceNormal ) );", "\tfloat direction = max( 0.0, dot( eyeDirection, reflection ) );", "\tspecularColor += pow( direction, shiny ) * sunColor * spec;", "\tdiffuseColor += max( dot( sunDirection, surfaceNormal ), 0.0 ) * sunColor * diffuse;", "}", "#include <common>", "#include <packing>", "#include <bsdfs>", "#include <fog_pars_fragment>", "#include <logdepthbuf_pars_fragment>", "#include <lights_pars_begin>", "#include <shadowmap_pars_fragment>", "#include <shadowmask_pars_fragment>", "void main() {", "#include <logdepthbuf_fragment>", "\tvec4 noise = getNoise( worldPosition.xz * size );", "\tvec3 surfaceNormal = normalize( noise.xzy * vec3( 1.5, 1.0, 1.5 ) );", "\tvec3 diffuseLight = vec3(0.0);", "\tvec3 specularLight = vec3(0.0);", "\tvec3 worldToEye = eye-worldPosition.xyz;", "\tvec3 eyeDirection = normalize( worldToEye );", "\tsunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );", "\tfloat distance = length(worldToEye);", "\tvec2 distortion = surfaceNormal.xz * ( 0.001 + 1.0 / distance ) * distortionScale;", "\tvec3 reflectionSample = vec3( texture2D( mirrorSampler, mirrorCoord.xy / mirrorCoord.w + distortion ) );", "\tfloat theta = max( dot( eyeDirection, surfaceNormal ), 0.0 );", "\tfloat rf0 = 0.3;", "\tfloat reflectance = rf0 + ( 1.0 - rf0 ) * pow( ( 1.0 - theta ), 5.0 );", "\tvec3 scatter = max( 0.0, dot( surfaceNormal, eyeDirection ) ) * waterColor;", "\tvec3 albedo = mix( ( sunColor * diffuseLight * 0.3 + scatter ) * getShadowMask(), ( vec3( 0.1 ) + reflectionSample * 0.9 + reflectionSample * specularLight ), reflectance);", "\tvec3 outgoingLight = albedo;", "\tgl_FragColor = vec4( outgoingLight, alpha );", "#include <tonemapping_fragment>", "#include <fog_fragment>", "}"].join("\n")
-         }
-            const R = new THREE.ShaderMaterial({
+                    }
+                }]),
+                vertexShader: ["uniform mat4 textureMatrix;", "uniform float time;", "varying vec4 mirrorCoord;", "varying vec4 worldPosition;", "#include <common>", "#include <fog_pars_vertex>", "#include <shadowmap_pars_vertex>", "#include <logdepthbuf_pars_vertex>", "void main() {", "\tmirrorCoord = modelMatrix * vec4( position, 1.0 );", "\tworldPosition = mirrorCoord.xyzw;", "\tmirrorCoord = textureMatrix * mirrorCoord;", "\tvec4 mvPosition =  modelViewMatrix * vec4( position, 1.0 );", "\tgl_Position = projectionMatrix * mvPosition;", "#include <beginnormal_vertex>", "#include <defaultnormal_vertex>", "#include <logdepthbuf_vertex>", "#include <fog_vertex>", "#include <shadowmap_vertex>", "}"].join("\n"),
+                fragmentShader: ["uniform sampler2D mirrorSampler;", "uniform float alpha;", "uniform float time;", "uniform float size;", "uniform float distortionScale;", "uniform sampler2D normalSampler;", "uniform vec3 sunColor;", "uniform vec3 sunDirection;", "uniform vec3 eye;", "uniform vec3 waterColor;", "varying vec4 mirrorCoord;", "varying vec4 worldPosition;", "vec4 getNoise( vec2 uv ) {", "\tvec2 uv0 = ( uv / 103.0 ) + vec2(time / 107.0, time / 209.0);", "\tvec2 uv1 = uv / 107.0-vec2( time / -199.0, time / 310.0 );", "\tvec2 uv2 = uv / vec2( 8907.0, 9803.0 ) + vec2( time / 101.0, time / 97.0 );", "\tvec2 uv3 = uv / vec2( 1091.0, 1027.0 ) - vec2( time / 109.0, time / -113.0 );", "\tvec4 noise = texture2D( normalSampler, uv0 ) +", "\t\ttexture2D( normalSampler, uv1 ) +", "\t\ttexture2D( normalSampler, uv2 ) +", "\t\ttexture2D( normalSampler, uv3 );", "\treturn noise * 0.5 - 1.0;", "}", "void sunLight( const vec3 surfaceNormal, const vec3 eyeDirection, float shiny, float spec, float diffuse, inout vec3 diffuseColor, inout vec3 specularColor ) {", "\tvec3 reflection = normalize( reflect( -sunDirection, surfaceNormal ) );", "\tfloat direction = max( 0.0, dot( eyeDirection, reflection ) );", "\tspecularColor += pow( direction, shiny ) * sunColor * spec;", "\tdiffuseColor += max( dot( sunDirection, surfaceNormal ), 0.0 ) * sunColor * diffuse;", "}", "#include <common>", "#include <packing>", "#include <bsdfs>", "#include <fog_pars_fragment>", "#include <logdepthbuf_pars_fragment>", "#include <lights_pars_begin>", "#include <shadowmap_pars_fragment>", "#include <shadowmask_pars_fragment>", "void main() {", "#include <logdepthbuf_fragment>", "\tvec4 noise = getNoise( worldPosition.xz * size );", "\tvec3 surfaceNormal = normalize( noise.xzy * vec3( 1.5, 1.0, 1.5 ) );", "\tvec3 diffuseLight = vec3(0.0);", "\tvec3 specularLight = vec3(0.0);", "\tvec3 worldToEye = eye-worldPosition.xyz;", "\tvec3 eyeDirection = normalize( worldToEye );", "\tsunLight( surfaceNormal, eyeDirection, 100.0, 2.0, 0.5, diffuseLight, specularLight );", "\tfloat distance = length(worldToEye);", "\tvec2 distortion = surfaceNormal.xz * ( 0.001 + 1.0 / distance ) * distortionScale;", "\tvec3 reflectionSample = vec3( texture2D( mirrorSampler, mirrorCoord.xy / mirrorCoord.w + distortion ) );", "\tfloat theta = max( dot( eyeDirection, surfaceNormal ), 0.0 );", "\tfloat rf0 = 0.3;", "\tfloat reflectance = rf0 + ( 1.0 - rf0 ) * pow( ( 1.0 - theta ), 5.0 );", "\tvec3 scatter = max( 0.0, dot( surfaceNormal, eyeDirection ) ) * waterColor;", "\tvec3 albedo = mix( ( sunColor * diffuseLight * 0.3 + scatter ) * getShadowMask(), ( vec3( 0.1 ) + reflectionSample * 0.9 + reflectionSample * specularLight ), reflectance);", "\tvec3 outgoingLight = albedo;", "\tgl_FragColor = vec4( outgoingLight, alpha );", "#include <tonemapping_fragment>", "#include <fog_fragment>", "}"].join("\n")
+            },
+            R = new THREE.ShaderMaterial({
                 fragmentShader: I.fragmentShader,
                 vertexShader: I.vertexShader,
                 uniforms: THREE.UniformsUtils.clone(I.uniforms),
@@ -158,8 +158,7 @@ const light = new THREE.AmbientLight(13952255, .3); scene.add(light);const s = n
                 side: u,
                 fog: g
             });
-            R.uniforms.mirrorSampler.value = M.texture,
-             R.uniforms.textureMatrix.value = T, R.uniforms.alpha.value = n, R.uniforms.time.value = r, R.uniforms.normalSampler.value = l, R.uniforms.sunColor.value = h, R.uniforms.waterColor.value = c, R.uniforms.sunDirection.value = d, R.uniforms.distortionScale.value = m, R.uniforms.eye.value = p, i.material = R, i.onBeforeRender = function (e, t, o) {
+        R.uniforms.mirrorSampler.value = M.texture, R.uniforms.textureMatrix.value = T, R.uniforms.alpha.value = n, R.uniforms.time.value = r, R.uniforms.normalSampler.value = l, R.uniforms.sunColor.value = h, R.uniforms.waterColor.value = c, R.uniforms.sunDirection.value = d, R.uniforms.distortionScale.value = m, R.uniforms.eye.value = p, i.material = R, i.onBeforeRender = function (e, t, o) {
             if (f.setFromMatrixPosition(i.matrixWorld), v.setFromMatrixPosition(o.matrixWorld), w.extractRotation(i.matrixWorld), y.set(0, 0, 1), y.applyMatrix4(w), x.subVectors(f, v), x.dot(y) > 0) return;
             x.reflect(y).negate(), x.add(f), w.extractRotation(o.matrixWorld), $.set(0, 0, -1), $.applyMatrix4(w), $.add(v), C.subVectors(f, $), C.reflect(y).negate(), C.add(f), mirrorCamera.position.copy(x), mirrorCamera.up.set(0, 1, 0), mirrorCamera.up.applyMatrix4(w), mirrorCamera.up.reflect(y), mirrorCamera.lookAt(C), mirrorCamera.far = o.far, mirrorCamera.updateMatrixWorld(), mirrorCamera.projectionMatrix.copy(o.projectionMatrix), T.set(.5, 0, 0, .5, 0, .5, 0, .5, 0, 0, .5, .5, 0, 0, 0, 1), T.multiply(mirrorCamera.projectionMatrix), T.multiply(mirrorCamera.matrixWorldInverse), b.setFromNormalAndCoplanarPoint(y, f), b.applyMatrix4(mirrorCamera.matrixWorldInverse), k.set(b.normal.x, b.normal.y, b.normal.z, b.constant);
             let a = mirrorCamera.projectionMatrix;
@@ -173,6 +172,8 @@ const light = new THREE.AmbientLight(13952255, .3); scene.add(light);const s = n
     }
     Water.prototype = Object.create(THREE.Mesh.prototype);
     Water.prototype.constructor = Water;
+    light = new THREE.DirectionalLight(16381658, .5);
+    light.position.set(0, 100, 0), scene.add(light);
     var e = new THREE.PlaneBufferGeometry(6e3, 6e3);
     const water = new Water(e, {
         textureWidth: 1024,
@@ -188,9 +189,7 @@ const light = new THREE.AmbientLight(13952255, .3); scene.add(light);const s = n
     water.rotation.x = -Math.PI / 2;
     scene.add(water)
 }
-
 scene.background = new THREE.Color(11789311);
-
 let render = (value) => {
     let filter = {
         r: 0,
@@ -217,7 +216,6 @@ let render = (value) => {
         let logIntervalId = setInterval(() => {
             e++;
             light.intensity -= .02;
-            light3.intensity -= .02
             scene.fog.color.set(get(color, i, e / 100));
             scene.background = new THREE.Color(get(color, i, e / 100));
             if (100 === e) {
@@ -230,30 +228,15 @@ let render = (value) => {
             let logIntervalId = setInterval(() => {
                 e++;
                 light.intensity += .02;
-                light3.intensity += .02;
                 scene.fog.color.set(get(i, color, e / 100));
                 scene.background = new THREE.Color(get(i, color, e / 100));
                 if (100 === e) {
                     clearInterval(logIntervalId);
                 }
             }, 20);
-        } else {
-            if (0 === value) {
-                let e = 0;
-                let logIntervalId = setInterval(() => {
-                    e++;
-                    light.intensity += .02;
-                    scene.fog.color.set(get(i, color, e / 100));
-                    scene.background = new THREE.Color(get(i, color, e / 100));
-                    if (100 === e) {
-                        clearInterval(logIntervalId);
-                    }
-                }, 20);
-            }
         }
-    };
-}
-
+    }
+};
 let get = (rgb1, rgb2, p) => {
     let o = Math.round((rgb2.r - rgb1.r) * p + rgb1.r);
     let d = Math.round((rgb2.g - rgb1.g) * p + rgb1.g);
@@ -312,6 +295,15 @@ const loadShipFromGUI = () => {
         }
     }
 }
+const f = {
+    boat: new THREE.MeshLambertMaterial({
+        color: 9064510
+    }),
+    sail: new THREE.MeshLambertMaterial({
+        color: 16777215
+    }),
+}
+f.sail.side = THREE.DoubleSide
 // load a resource
 const loadShip = (ship, shipGUI, params, Scontrollers, p) => {
     const textureLoader = new THREE.TextureLoader();
@@ -370,7 +362,6 @@ const loadShip = (ship, shipGUI, params, Scontrollers, p) => {
         }
     );
 }
-
 let loadDog = () => {
     const textureLoader = new THREE.TextureLoader();
     const objloader = new OBJLoader();
