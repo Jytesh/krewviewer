@@ -1,14 +1,15 @@
 // Half of the code is from krew's dist.min.js so dont sue me :)
 
-import * as THREE from "https://cdnjs.cloudflare.com/ajax/libs/three.js/r108/three.min.js";
-import { OrbitControls } from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
-import { OBJLoader } from "https://krew.io/build/libs/OBJLoader.js";
 import { map as SHIPSMAP } from "./data/ships.js";
+import {
+    OrbitControls
+} from "https://threejs.org/examples/jsm/controls/OrbitControls.js";
 
 window.THREE = THREE; // for debug
-
+const OBJLoader = THREE.OBJLoader
 const SHIPSLIST = Object.keys(SHIPSMAP)
 
+console.log(THREE.scene)
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 let light;
