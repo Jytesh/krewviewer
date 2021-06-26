@@ -27,7 +27,7 @@ controls.update();
 
 const environment = new Object(),
     loader = new THREE.TextureLoader(),
-    water_tex = loader.load('https://krew.io/assets/img/water.jpg');
+    water_tex = loader.load('https://krew.io/assets/models/misc/water.jpg');
 
 let refresh = () => {};
 const GlobalParams = {
